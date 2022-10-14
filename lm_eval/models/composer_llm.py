@@ -106,7 +106,7 @@ class ComposerLLM(BaseLM):
             toks = x[1]['input_ids'] + x[2]['input_ids']
 
             # I believe we want the continuation to be masked so that the model can't use it
-            masks = x[1]['attention_mask'] + [0]*len(x[2]['attention_mask']) 
+            masks = x[1]['attention_mask'] + x[2]['attention_mask']
             return -len(toks), (tuple(toks), tuple(masks))
 
         re_ord = utils.Reorderer(requests, _collate)
@@ -120,6 +120,8 @@ class ComposerLLM(BaseLM):
 
           
             for _, context_enc, continuation_enc in chunk:
+                # mask out the continuation so we can't attend to it!
+                continuation_enc['attention_mask'] = [0]*len(continuation_enc['attention_mask'])
                 # sanity check
                 assert len(context_enc) > 0
                 assert len(continuation_enc) > 0
