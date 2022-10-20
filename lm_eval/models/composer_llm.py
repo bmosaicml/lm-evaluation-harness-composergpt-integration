@@ -14,8 +14,19 @@ class ComposerLLM(BaseLM):
         tokenizer, # Can be any tokenizer whose forward method returns a dict w/ keys ['input_ids', 'attention_mask']
         device,
         batch_size=4
+        precision="fp32"
     ):
         super().__init__()
+
+        if precision == "fp16":
+            self.dtype = torch.float16
+        elif precision == "bf16"
+            self.dtype = torch.bfloat16
+        elif precision == "fp32":
+            self.dtype = torch.long
+        else:
+            raise Exception(f"Unsupported precision: {precision}")
+
 
         assert isinstance(device, str)
        
@@ -149,7 +160,7 @@ class ComposerLLM(BaseLM):
                     padded_input = input + [padding_token[k]]*(self.max_length - len(input))
                     inp[k] = torch.tensor(
                         padded_input,
-                        dtype=torch.long,
+                        dtype=self.dtype,
                     ).to(self.device)
 
               
@@ -179,7 +190,7 @@ class ComposerLLM(BaseLM):
 
                 # Check if per-token argmax is exactly equal to continuation
                 greedy_tokens = logits.argmax(dim=-1)
-                cont_toks = torch.tensor(cont_toks, dtype=torch.long).unsqueeze(
+                cont_toks = torch.tensor(cont_toks, dtype=self.dtype).unsqueeze(
                     0
                 )  # [1, seq]
                 max_equal = (greedy_tokens == cont_toks).all()
