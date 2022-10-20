@@ -3,6 +3,7 @@ from lm_eval.base import BaseLM
 from tqdm import tqdm
 import torch
 import torch.nn.functional as F
+from composer.core.precision import get_precision_context, Precision
 
 from lm_eval import utils
 
@@ -13,20 +14,12 @@ class ComposerLLM(BaseLM):
         model, # Can be any torch module whose forward expects a dict w/ keys ['input_ids', 'attention_mask']
         tokenizer, # Can be any tokenizer whose forward method returns a dict w/ keys ['input_ids', 'attention_mask']
         device,
-        batch_size=4
-        precision="fp32"
+        precision: str,
+        batch_size=4,
     ):
         super().__init__()
 
-        if precision == "fp16":
-            self.dtype = torch.float16
-        elif precision == "bf16"
-            self.dtype = torch.bfloat16
-        elif precision == "fp32":
-            self.dtype = torch.long
-        else:
-            raise Exception(f"Unsupported precision: {precision}")
-
+        self.precision = precision
 
         assert isinstance(device, str)
        
@@ -96,7 +89,8 @@ class ComposerLLM(BaseLM):
         logits returned from the model
         """
         with torch.no_grad():
-            res = self.model(inps)
+            with get_precision_context(self.precision):
+                res = self.model(inps)
             return res[:, :, :self.vocab_size]
 
     def _model_generate(self, context, max_length, eos_token_id):
@@ -160,7 +154,7 @@ class ComposerLLM(BaseLM):
                     padded_input = input + [padding_token[k]]*(self.max_length - len(input))
                     inp[k] = torch.tensor(
                         padded_input,
-                        dtype=self.dtype,
+                        dtype=torch.long,
                     ).to(self.device)
 
               
@@ -174,9 +168,11 @@ class ComposerLLM(BaseLM):
 
 
             batched_inps = {k: torch.stack(inps[k], dim=0) for k in inps}
-            # batched_inps = torch.cat(inps, dim=0)  # [batch, padding_length
+            
+            outputs = self._model_call(batched_inps)
+            
             multi_logits = F.log_softmax(
-                self._model_call(batched_inps), dim=-1
+                outputs, dim=-1
             ).cpu()  # [batch, padding_length, vocab]
 
             for (cache_key, _, _), logits, inp, inplen, cont_toks in zip(
@@ -190,7 +186,7 @@ class ComposerLLM(BaseLM):
 
                 # Check if per-token argmax is exactly equal to continuation
                 greedy_tokens = logits.argmax(dim=-1)
-                cont_toks = torch.tensor(cont_toks, dtype=self.dtype).unsqueeze(
+                cont_toks = torch.tensor(cont_toks, dtype=torch.long).unsqueeze(
                     0
                 )  # [1, seq]
                 max_equal = (greedy_tokens == cont_toks).all()
