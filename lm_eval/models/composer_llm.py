@@ -120,9 +120,7 @@ class ComposerLLM(BaseLM):
             return res[:, :, :self.vocab_size]
 
     def _model_generate(self, context, max_length, eos_token_id):
-        return self.model.generate(
-            context, max_length=max_length, eos_token_id=eos_token_id, do_sample=False
-        )
+        raise NotImplementedError
 
     def _loglikelihood_tokens(self, requests, disable_tqdm=False):
         return super()._loglikelihood_tokens(requests, padding_length=self.max_length, padding_token=self.eot_token_id)
