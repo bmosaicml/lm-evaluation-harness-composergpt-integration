@@ -14,8 +14,8 @@ class ComposerLLM(BaseLM):
         model, # Can be any torch module whose forward expects a dict w/ keys ['input_ids', 'attention_mask']
         tokenizer, # Can be any tokenizer whose forward method returns a dict w/ keys ['input_ids', 'attention_mask']
         device,
-        precision: Optional[str] = None,
         batch_size=4,
+        precision: Optional[str] = None,
     ):
         super().__init__()
 
