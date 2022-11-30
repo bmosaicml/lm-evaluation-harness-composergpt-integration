@@ -98,6 +98,10 @@ class ComposerLLM(BaseLM):
         returns: a torch tensor of shape [batch, sequence, vocab] with the
         logits returned from the model
         """
+        model = self.model
+        while inspect.getfullargspec(model.forward).args == ['self', 'batch']:
+            model = model.model
+
         forward_argspec = inspect.getfullargspec(self.model.forward).args
         args = {"input_ids": inps}
         if 'key_padding_mask' in forward_argspec:
@@ -111,9 +115,9 @@ class ComposerLLM(BaseLM):
         with torch.no_grad():
             if self.precision is not None:
                 with get_precision_context(self.precision):
-                    res = self.model(**args)
+                    res = model(**args)
             else:
-                res = self.model(**args)
+                res = model(**args)
                 
             if isinstance(res, transformers.modeling_outputs.CausalLMOutputWithPast):
                 res = res.logits
