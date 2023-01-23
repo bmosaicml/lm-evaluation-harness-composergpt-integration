@@ -20,7 +20,7 @@ setuptools.setup(
     ],
     python_requires=">=3.6",
     install_requires=[
-        "datasets>=2.0.0",
+        "datasets",
         "click>=7.1",
         "scikit-learn>=0.24.1",
         "torch>=1.7",
@@ -41,8 +41,6 @@ setuptools.setup(
         "jieba==0.42.1",
         "pytest",
         "mosaicml"
-        # "nagisa==0.2.8",
-        # "bleurt@https://github.com/google-research/bleurt/archive/b610120347ef22b494b6d69b4316e303f5932516.zip#egg=bleurt",
     ],
     dependency_links=[
         # "https://github.com/google-research/bleurt/archive/b610120347ef22b494b6d69b4316e303f5932516.zip#egg=bleurt",
