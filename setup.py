@@ -32,7 +32,7 @@ setuptools.setup(
         "mock==4.0.3",
         "jieba==0.42.1",
         "pytest",
-        "mosaicml"
+        "mosaicml",
         "jsonlines",
         "numexpr",
         "openai>=0.6.4",
