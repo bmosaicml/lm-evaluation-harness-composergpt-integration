@@ -4,9 +4,11 @@
 [![codecov](https://codecov.io/gh/EleutherAI/lm-evaluation-harness/branch/master/graph/badge.svg?token=JSG3O2427J)](https://codecov.io/gh/EleutherAI/lm-evaluation-harness)
 
 ## Overview
+This is a custom fork of `https://github.com/EleutherAI/lm-evaluation-harness` that offers support for ComposerGPT models from `https://github.com/mosaicml/llm-foundry`
 
-This project provides a unified framework to test autoregressive language models (GPT-2, GPT-3, GPTNeo, etc) on a large number of different evaluation tasks.
+Build it using `pip install .`
 
+Don't evaluate it directly. Instead use `https://github.com/mosaicml/llm-foundry`
 Features:
 
 - 200+ tasks implemented. See the [task-table](./docs/task_table.md) for a complete list.
