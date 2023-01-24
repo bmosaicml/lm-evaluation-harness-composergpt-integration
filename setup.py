@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="lm_eval",
-    version="0.2.0",
+    version="0.3.0",
     author="Leo Gao",
     author_email="lg@eleuther.ai",
     description="A framework for evaluating autoregressive language models",
@@ -14,6 +14,7 @@ setuptools.setup(
     url="https://github.com/EleutherAI/lm-evaluation-harness",
     packages=setuptools.find_packages(),
     classifiers=[
+        "Development Status :: 3 - Alpha",
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
@@ -22,8 +23,9 @@ setuptools.setup(
     install_requires=[
         "datasets",
         "click>=7.1",
-        "scikit-learn>=0.24.1",
+        "sqlitedict",
         "torch>=1.7",
+        "tqdm-multiprocess",
         "transformers>=4.1",
         "sqlitedict==1.6.0",
         "pytablewriter==0.58.0",
@@ -44,6 +46,10 @@ setuptools.setup(
     ],
     dependency_links=[
         # "https://github.com/google-research/bleurt/archive/b610120347ef22b494b6d69b4316e303f5932516.zip#egg=bleurt",
+        "zstandard",
     ],
-    extras_require={"dev": ["pytest", "black", "pre-commit"]},
+    extras_require={
+        "dev": ["black", "flake8", "pre-commit", "pytest", "pytest-cov"],
+        "multilingual": ["nagisa>=0.2.7", "jieba>=0.42.1"],
+    },
 )
