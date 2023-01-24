@@ -38,6 +38,7 @@ setuptools.setup(
         "tqdm-multiprocess==0.0.11",
         "zstandard==0.15.2",
         "jsonlines==2.0.0",
+        "sklearn",
         "mock==4.0.3",
         "openai==0.6.4",
         "jieba==0.42.1",
